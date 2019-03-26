@@ -28,7 +28,7 @@ cwd = '/data3/cdb/ytong/Ensemble/distance/'
 for key, component in fs.items():
     value = []
     for i in component:
-        f = f=open(cwd+sys.argv[2]+'_'+i+'.pkl','rb')  
+        f = open(cwd+sys.argv[2]+'_'+i+'.pkl','rb')  
         dis=pkl.load(f)  
         f.close()
         value.append(dis)
