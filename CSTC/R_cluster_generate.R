@@ -107,19 +107,6 @@ dist_mat_v = as.dist(dist_mat_v)
 
 hclust_avg_v <- hclust(dist_mat_v, method = 'average')
 
-dist_mat <- cor(ru_hcp[1:444], use='complete.obs')
-dist_mat = 1 - dist_mat
-dist_mat = as.dist(dist_mat)
-
-hclust_avg <- hclust(dist_mat, method = 'average')
-
-dist_mat_v <- cor(cbic_hcp[1:444], use='complete.obs')
-dist_mat_v = 1 - dist_mat_v
-dist_mat_v = as.dist(dist_mat_v)
-
-hclust_avg_v <- hclust(dist_mat_v, method = 'average')
-
-
 find_match = function(matric1, matric2){
   rownames(matric1) = 1:nrow(matric1)
   rownames(matric2) = 1:nrow(matric2)
@@ -190,6 +177,7 @@ for (c_number in c(2,3,4,5,7)){
       ylab('value')+labs(title = paste('cluster',i))
     plot_list[[2*i-1]]=p
     write(rownames(d)[cut_avg==i],paste(c_number,'_cluster/','hcp_ru/cluster_',i,'/variable.txt',sep = ''))
+    write(r_square[cut_avg==i],paste(c_number,'_cluster/','hcp_ru/cluster_',i,'/r_square.txt',sep = ''))
   }
   cut_avg <- cutree(hclust_avg_v, k=c_number)
   cut_avg_v = rep(0, length(cut_avg))
@@ -210,8 +198,9 @@ for (c_number in c(2,3,4,5,7)){
       ylab('value')+labs(title = paste('cluster',i))
     plot_list[[2*i]]=p
     write(rownames(d)[cut_avg_v==i],paste(c_number,'_cluster/','hcp_cbic/cluster_',i,'/variable.txt',sep = ''))
+    write(r_square_v[cut_avg==i],paste(c_number,'_cluster/','hcp_cbic/cluster_',i,'/r_square.txt',sep = ''))
   }
-  #multiplot(plotlist = plot_list, cols = c_number)  
+  multiplot(plotlist = plot_list, cols = c_number)  
   
   
 }
@@ -278,86 +267,7 @@ hclust_avg_v <- hclust(dist_mat_v, method = 'average')
 
 
 
-setwd('~/clusters_analysis/')
-dir.create('cluster_ana03_cor')
-setwd('cluster_ana03_cor')
-pdf('cluster_hcp.pdf')
-for (c_number in c(2,3,4,5,7)){
-  cut_avg <- cutree(hclust_avg, k=c_number)
-  mean_c = double()
-  for(i in unique(cut_avg)){
-    after_scale = scale(ru_hcp_res[,1:444][,cut_avg==i])
-    mean = apply(after_scale, 1, mean, na.rm = T)
-    mean_c = rbind(mean_c, mean)
-  }
-  
-  cut_avg <- cutree(hclust_avg_v, k=c_number)  
-  mean_cv = double()
-  for(i in unique(cut_avg)){
-    after_scale = scale(cbic_hcp[,1:444][,cut_avg==i])
-    mean = apply(after_scale, 1, mean, na.rm = T)
-    mean_cv = rbind(mean_cv, mean)
-  }
-  ind = as.integer(find_match(mean_cv, mean_c))
-  col = rainbow_hcl(c_number,c=90)
-  col_v = col[ind]
-  
-  
-  dir.create(paste(c_number,'_cluster',sep=''))
-  par(mfrow=c(2,1))
-  avg_dend_obj <- as.dendrogram(hclust_avg)
-  avg_col_dend <- color_branches(avg_dend_obj, k=c_number, col = col)
-  plot(avg_col_dend, main = 'dendrogram for hcp_ru')
-  avg_dend_obj_v <- as.dendrogram(hclust_avg_v)
-  avg_col_dend_v <- color_branches(avg_dend_obj_v, k=c_number, col = col_v)
-  plot(avg_col_dend_v, main = 'dendrogram for hcp_cbic')
-  
-  
-  
-  cut_avg <- cutree(hclust_avg, k=c_number)
-  dir.create(paste(c_number,'_cluster/','hcp_ru',sep = ''))
-  dir.create(paste(c_number,'_cluster/','hcp_cbic',sep = ''))
-  plot_list=list()
-  for(i in unique(cut_avg)){
-    dir.create(paste(c_number,'_cluster/','hcp_ru/cluster_',i,sep = ''))
-    after_scale = t(scale(t(d[cut_avg==i, ])))
-    mean = apply(after_scale, 2, mean, na.rm = T)
-    sd = apply(after_scale, 2, sd, na.rm = T)
-    df = data.frame(age = age_vec, mean = mean, sd = sd)
-    p = ggplot(df, aes(x=age, y=mean)) + 
-      geom_line(col=col[i]) +
-      geom_point(col=col[i])+
-      geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=0.1,alpha = 0.1, col=col[i])+
-      ylab('value')+labs(title = paste('cluster',i))
-    plot_list[[2*i-1]]=p
-    write(rownames(d)[cut_avg==i],paste(c_number,'_cluster/','hcp_ru/cluster_',i,'/variable.txt',sep = ''))
-  }
-  cut_avg <- cutree(hclust_avg_v, k=c_number)
-  cut_avg_v = rep(0, length(cut_avg))
-  for(i in 1:c_number){
-    cut_avg_v[cut_avg==i] = ind[i]
-  }
-  #col = rainbow_hcl(length(unique(cut_avg)),c=90)
-  for(i in unique(cut_avg)){
-    dir.create(paste(c_number,'_cluster/','hcp_cbic/cluster_',i,sep = ''))
-    after_scale = t(scale(t(d_v[cut_avg_v==i, ])))
-    mean = apply(after_scale, 2, mean, na.rm = T)
-    sd = apply(after_scale, 2, sd, na.rm = T)
-    df = data.frame(age = age_vec, mean = mean, sd = sd)
-    p = ggplot(df, aes(x=age, y=mean)) + 
-      geom_line(col=col[i]) +
-      geom_point(col=col[i])+
-      geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=0.1,alpha = 0.1, col=col[i])+
-      ylab('value')+labs(title = paste('cluster',i))
-    plot_list[[2*i]]=p
-    write(rownames(d)[cut_avg_v==i],paste(c_number,'_cluster/','hcp_cbic/cluster_',i,'/variable.txt',sep = ''))
-  }
-  #multiplot(plotlist = plot_list, cols = c_number)  
-  
-  
-}
 
-dev.off()
 
 #####################################################################
 ####################### R-SQUARE ####################################

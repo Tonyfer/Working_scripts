@@ -39,13 +39,13 @@ for fold in folds:
         
         v_s_l_1 = list(set([i.split('.')[-1] for i in r_li_1 if '_v_' in i and 'lh' in i]))
         v_s_r_1 = list(set([i.split('.')[-1] for i in r_li_1 if '_v_' in i and 'rh' in i]))
-        v_s_l_1 = [v_s_l_1[i] for i in range(len(v_s_l_1)) if i%2==0]
-        v_s_r_1 = [v_s_r_1[i] for i in range(len(v_s_r_1)) if i%2==0]
+        #v_s_l_1 = [v_s_l_1[i] for i in range(len(v_s_l_1)) if i%2==0]
+        #v_s_r_1 = [v_s_r_1[i] for i in range(len(v_s_r_1)) if i%2==0]
         
         v_s_l_2 = list(set([i.split('.')[-1] for i in r_li_2 if '_v_' in i and 'lh' in i]))
         v_s_r_2 = list(set([i.split('.')[-1] for i in r_li_2 if '_v_' in i and 'rh' in i]))
-        v_s_l_2 = [v_s_l_2[i] for i in range(len(v_s_l_2)) if i%2==0]
-        v_s_r_2 = [v_s_r_2[i] for i in range(len(v_s_r_2)) if i%2==0]
+        #v_s_l_2 = [v_s_l_2[i] for i in range(len(v_s_l_2)) if i%2==0]
+        #v_s_r_2 = [v_s_r_2[i] for i in range(len(v_s_r_2)) if i%2==0]
         
         
         v_s_l = [i for i in v_s_l_1 if i in v_s_l_2]
@@ -128,7 +128,7 @@ for fold in folds:
 
 
 #######################
-
+'''
 for file in files:
     fold = file.replace('variable.txt','')
     f = open(file)

@@ -29,8 +29,8 @@ for file in files[0]:
 
     v_s_l = list(set([i.split('.')[-1] for i in r_li if '_v_' in i and 'lh' in i]))
     v_s_r = list(set([i.split('.')[-1] for i in r_li if '_v_' in i and 'rh' in i]))
-    v_s_l = [v_s_l[i] for i in range(len(v_s_l)) if i%2==0]
-    v_s_r = [v_s_r[i] for i in range(len(v_s_r)) if i%2==0]
+    #v_s_l = [v_s_l[i] for i in range(len(v_s_l)) if i%2==0]
+    #v_s_r = [v_s_r[i] for i in range(len(v_s_r)) if i%2==0]
 
 
     regi_l = [i.decode('UTF-8') for i in ss[2]]
@@ -101,7 +101,7 @@ for file in files[0]:
 
 
 
-
+'''
 for file in files:
     fold = file.replace('variable.txt','')
     f = open(file)
@@ -147,7 +147,7 @@ for file in files:
     plt.savefig(fold+'surface_volume.png')
 
 
-
+'''
 
 
 
