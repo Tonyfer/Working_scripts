@@ -5,7 +5,8 @@
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 import nibabel as nib
-
+import sys
+import scipy
 
 def dice(im1, im2, empty_score=1.0):
    
@@ -168,4 +169,4 @@ out.to_filename(sys.argv[4])
 
 
 if sys.argv[5] == 'Yes':
-    smooth(sys.argv[4], sys.argvs[4])
+    smooth(sys.argv[4], sys.argv[4])
