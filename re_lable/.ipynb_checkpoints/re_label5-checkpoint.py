@@ -36,16 +36,16 @@ def re_label4(ref, target):
     ref_encoded = onehot_encoder.fit_transform(ref)
     target_encoded = onehot_encoder.fit_transform(target)
     dices = np.array([[dice(target_encoded[:,j], ref_encoded[:,i]) for i in range(ref_encoded.shape[1])] for j in range(target_encoded.shape[1])])
-    count = [np.sum(ref == i) for i in range(dices.shape[0])]
+    count = [np.sum(target == i) for i in range(dices.shape[0])]
     ind = np.argsort(count)[::-1]
     
     
     pairs = []
     for i in ind:
-        match = np.argmax(dices[:, i])
-        dices[:,i] = -1
-        dices[match, :] = -1
-        pairs.append((match,i))
+        match = np.argmax(dices[i, :])
+        dices[i,:] = -1
+        dices[:, match] = -1
+        pairs.append((i,match))
     
     
     for i in pairs:
@@ -57,70 +57,7 @@ def re_label4(ref, target):
 
 
 
-def ndarray_to_vol(data_array, roi_mask_file, sample_file, filename):
-    """
-    Converts a numpy array to a nifti file given an roi mask
-    Parameters
-    ----------
-    data_array : array_like
-        A data array with the same column length and index alignment as the
-        given roi_mask_file.  If data_array is two dimensional, first dimension
-        is considered temporal dimension
-    roi_mask_file : string
-        Path of the roi_mask_file
-    sample_file : string or list of strings
-        Path of sample nifti file(s) to use for header of the output.
-        If list, the first file is chosen.
-    filename : string
-        Name of output file
-    Returns
-    -------
-    img_file : string
-        Path of the nifti file output
-    """
 
-    import os
-    import numpy as np
-    import nibabel as nb
-
-    roi_mask_file = nb.load(roi_mask_file).get_data().astype('bool')
-
-    if data_array.ndim == 1:
-        out_vol = np.zeros_like(roi_mask_file, dtype=data_array.dtype)
-        out_vol[roi_mask_file] = data_array
-
-    elif data_array.ndim == 2:
-        list_roi_shape = list(roi_mask_file.shape[0:3])
-
-        out_vol = np.zeros(
-            list_roi_shape + [data_array.shape[1]],
-            dtype=data_array.dtype
-        )
-        out_vol[roi_mask_file] = data_array
-
-    else:
-        raise ValueError(
-            'data_array is %i dimensional, '
-            'must be either 1 or 2 dimensional' % len(data_array.shape)
-        )
-
-    # TODO @AKI why not use header from ROI file?
-    #           it should has the same affine
-    if type(sample_file) is list:
-        sample_file = sample_file[0]
-
-    nii = nb.load(sample_file)
-
-    img = nb.Nifti1Image(
-        out_vol,
-        header=nii.get_header(),
-        affine=nii.get_affine()
-    )
-
-    img_file = os.path.join(os.getcwd(), filename)
-    img.to_filename(img_file)
-
-    return img_file, img
 
 
 

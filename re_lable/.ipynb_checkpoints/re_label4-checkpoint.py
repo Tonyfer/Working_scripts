@@ -36,16 +36,16 @@ def re_label4(ref, target):
     ref_encoded = onehot_encoder.fit_transform(ref)
     target_encoded = onehot_encoder.fit_transform(target)
     dices = np.array([[dice(target_encoded[:,j], ref_encoded[:,i]) for i in range(ref_encoded.shape[1])] for j in range(target_encoded.shape[1])])
-    count = [np.sum(target == i) for i in range(dices.shape[0])]
+    count = [np.sum(ref == i) for i in range(dices.shape[0])]
     ind = np.argsort(count)[::-1]
     
     
     pairs = []
     for i in ind:
-        match = np.argmax(dices[i, :])
-        dices[i,:] = -1
-        dices[:,match] = -1
-        pairs.append((i,match))
+        match = np.argmax(dices[:, i])
+        dices[:,i] = -1
+        dices[match, :] = -1
+        pairs.append((match,i))
     
     
     for i in pairs:
