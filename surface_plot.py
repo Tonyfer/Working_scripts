@@ -65,3 +65,33 @@ def nilearn_subplot(fig_params, plot_params):
     plt.tight_layout()
     if fname:
         plt.savefig(fname, bbox_inches='tight')
+        
+        
+        
+        
+        
+'''
+fig_params = {'dim': (1,4),
+              'figsize': (16,6),
+              'title': 'Raw Cortical Thickness',
+              'fname': None
+             }
+
+plot_params = {'data': all_subs_thickness[-1,:].T,
+               'surf_mesh': [fs5['pial_left'], fs5['pial_left'], 
+                             fs5['pial_right'], fs5['pial_right']],
+               'bg_map': [fs5['sulc_left'], fs5['sulc_left'],
+                          fs5['sulc_right'], fs5['sulc_right']],
+               'hemis': ['left', 'left', 
+                         'right', 'right'],
+               'views': ['lateral', 'medial', 
+                         'lateral', 'medial'],
+               'symmetric': True,
+               'cmap': 'viridis',
+               'threshold': None
+              }
+
+nilearn_subplot(fig_params, plot_params)
+
+
+'''
