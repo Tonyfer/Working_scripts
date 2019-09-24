@@ -18,6 +18,7 @@ fs_v_ctx.lh.parstriangularis
 fs_v_ctx.lh.pericalcarine
 fs_v_ctx.lh.postcentral
 fs_v_ctx.lh.posteriorcingulate
+fs_v_ctx.lh.precentral
 fs_v_ctx.lh.precuneus
 fs_v_ctx.lh.rostralmiddlefrontal
 fs_v_ctx.lh.superiorfrontal
@@ -27,6 +28,7 @@ fs_v_ctx.lh.supramarginal
 fs_v_ctx.lh.frontalpole
 fs_v_ctx.lh.temporalpole
 fs_v_ctx.lh.transversetemporal
+fs_v_ctx.lh.insula
 fs_v_Left.Cerebral.White.Matter
 fs_v_Left.Accumbens.area
 fs_v_wm.lh.parsorbitalis
@@ -40,6 +42,7 @@ fs_v_ctx.rh.inferiorparietal
 fs_v_ctx.rh.inferiortemporal
 fs_v_ctx.rh.isthmuscingulate
 fs_v_ctx.rh.lateraloccipital
+fs_v_ctx.rh.lateralorbitofrontal
 fs_v_ctx.rh.lingual
 fs_v_ctx.rh.medialorbitofrontal
 fs_v_ctx.rh.middletemporal
@@ -49,6 +52,8 @@ fs_v_ctx.rh.parsorbitalis
 fs_v_ctx.rh.parstriangularis
 fs_v_ctx.rh.pericalcarine
 fs_v_ctx.rh.postcentral
+fs_v_ctx.rh.posteriorcingulate
+fs_v_ctx.rh.precentral
 fs_v_ctx.rh.precuneus
 fs_v_ctx.rh.rostralmiddlefrontal
 fs_v_ctx.rh.superiorfrontal
@@ -62,7 +67,6 @@ fs_v_Right.Cerebral.White.Matter
 fs_v_Right.Caudate
 fs_v_Right.Putamen
 fs_v_Right.Accumbens.area
-fs_v_Right.vessel
+fs_v_wm.rh.parsorbitalis
 fs_v_wm.rh.frontalpole
 fs_v_wm.rh.temporalpole
-fs_v_wm.rh.transversetemporal

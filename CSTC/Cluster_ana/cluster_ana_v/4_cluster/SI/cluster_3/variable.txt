@@ -1,2 +1,2 @@
-fs_v_ctx.lh.insula
-fs_v_ctx.rh.parahippocampal
+fs_v_ctx.rh.bankssts
+fs_v_ctx.rh.insula

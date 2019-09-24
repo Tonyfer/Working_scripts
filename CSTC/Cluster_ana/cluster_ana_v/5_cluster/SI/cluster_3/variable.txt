@@ -1,2 +1,15 @@
+fs_v_ctx.lh.caudalmiddlefrontal
+fs_v_ctx.lh.fusiform
+fs_v_ctx.lh.inferiortemporal
+fs_v_ctx.lh.lateralorbitofrontal
+fs_v_ctx.lh.middletemporal
+fs_v_ctx.lh.parsopercularis
+fs_v_ctx.lh.parstriangularis
 fs_v_ctx.lh.insula
-fs_v_ctx.rh.parahippocampal
+fs_v_ctx.rh.caudalmiddlefrontal
+fs_v_ctx.rh.fusiform
+fs_v_ctx.rh.lateralorbitofrontal
+fs_v_ctx.rh.middletemporal
+fs_v_ctx.rh.parsopercularis
+fs_v_ctx.rh.parstriangularis
+fs_v_ctx.rh.supramarginal

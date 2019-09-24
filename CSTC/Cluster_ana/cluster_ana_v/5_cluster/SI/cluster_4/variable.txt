@@ -1,3 +1,2 @@
-fs_v_wm.lh.transversetemporal
-fs_v_wm.rh.cuneus
-fs_v_wm.rh.postcentral
+fs_v_ctx.rh.bankssts
+fs_v_ctx.rh.insula

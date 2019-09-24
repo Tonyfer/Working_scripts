@@ -1,9 +1,7 @@
 fs_v_ctx.lh.caudalanteriorcingulate
 fs_v_ctx.lh.entorhinal
 fs_v_ctx.lh.parahippocampal
-fs_v_ctx.lh.precentral
 fs_v_ctx.lh.rostralanteriorcingulate
-fs_v_ctx.lh.insula
 fs_v_Left.Lateral.Ventricle
 fs_v_Left.Inf.Lat.Vent
 fs_v_Left.Thalamus.Proper
@@ -50,10 +48,7 @@ fs_v_Left.UnsegmentedWhiteMatter
 fs_v_ctx.rh.bankssts
 fs_v_ctx.rh.caudalanteriorcingulate
 fs_v_ctx.rh.entorhinal
-fs_v_ctx.rh.lateralorbitofrontal
 fs_v_ctx.rh.parahippocampal
-fs_v_ctx.rh.posteriorcingulate
-fs_v_ctx.rh.precentral
 fs_v_ctx.rh.rostralanteriorcingulate
 fs_v_ctx.rh.insula
 fs_v_Right.Lateral.Ventricle
@@ -63,6 +58,7 @@ fs_v_Right.Pallidum
 fs_v_Right.Hippocampus
 fs_v_Right.Amygdala
 fs_v_Right.VentralDC
+fs_v_Right.vessel
 fs_v_Right.choroid.plexus
 fs_v_wm.rh.bankssts
 fs_v_wm.rh.caudalanteriorcingulate
@@ -93,6 +89,7 @@ fs_v_wm.rh.superiorfrontal
 fs_v_wm.rh.superiorparietal
 fs_v_wm.rh.superiortemporal
 fs_v_wm.rh.supramarginal
+fs_v_wm.rh.transversetemporal
 fs_v_wm.rh.insula
 fs_v_Right.UnsegmentedWhiteMatter
 fs_v_Brain.Stem
