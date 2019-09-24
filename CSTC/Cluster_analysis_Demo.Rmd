@@ -268,6 +268,7 @@ for (c_number in c(2:5)){
         theme(axis.text=element_text(size=6), axis.title=element_text(size=6))
       plot_list[[3*(i-1)+si]]=p
       write(rownames(d_l[[si]])[cut_c_v==i],paste(c_number,'_cluster/',sites[si],'/cluster_',i,'/variable.txt',sep = ''))
+      write(r_square_l[[si]][cut_c_v==i],paste(c_number,'_cluster/',sites[si],'/cluster_',i,'/r_square.txt',sep = ''))
     }
   }
   multiplot(plotlist = plot_list, cols = c_number)  
