@@ -1,0 +1,2 @@
+fs_v_ctx.lh.insula
+fs_v_ctx.rh.parahippocampal

@@ -1,28 +1,287 @@
 ---
 title: "Cluster Analysis Demo"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+The aim of this analysis is to see whether the clustering results on the developmental trajectories of different brain pacels are consistent through different sites. Since the whole study need to use data collected from different parts of the world. In this analysis, we used the data from HBN.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Load data and packages
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+We gonna use the post-ComBat data from the previous combat.ipynb here.
 
-```{r cars}
-summary(cars)
+```{r}
+library(dendextend)
+library(colorspace)
+library(ggplot2)
+
+hcp_si = read.csv('after_demo.csv', as.is = T)[,-1]
+group_data = list()
+group_data[[1]] = hcp_si[hcp_si$group == 0,]
+group_data[[2]] = hcp_si[hcp_si$group == 1,]
+group_data[[3]] = hcp_si[hcp_si$group == 2,]
+sites = c('SI', 'RU', 'CBIC')
 ```
 
-## Including Plots
+## Define utlity functions
 
-You can also embed plots, for example:
+```{r}
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  #This fuction is used to plot the subplots in the plotlist, 
+  #Or you can just feed in indivual subplots.
+  
+  
+  library(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+find_match = function(matric1, matric2, rown1, rown2){
+  #This function is used for finding the match of different clustering results.
+  #matric1 : (n_feature, n_prediction) matrix
+  #matric2 : (n_feature, n_prediction) matrix
+  #Returns : 
+  #or : array-like
+  #The cluster label in matric1 that each cluster in matric2 matched to
+  
+  
+  rownames(matric1) = 1:nrow(matric1)
+  rownames(matric2) = 1:nrow(matric1)
+  cr = as.data.frame(cor(t(matric1), t(matric2),use='complete.obs'))
+  cr = cbind(cr, rep(-1, nrow(cr)))
+  or = c()
+  for(i in 1:nrow(cr)){
+    v = cr[i, !colnames(cr) %in% or]
+    m = which.max(v)
+    m = colnames(v)[m]
+    or = c(or,m)
+    #  fff = as.data.frame(fff)
+  }
+  return(or)
+}
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Fit GAMS for each variable~Age and get the prediction
+
+We fitted GAMs(Generalized Additive Model) to get the developmental trajectry for each feature.
+
+In statistics, a generalized additive model is a generalized linear model in which the linear predictor depends linearly on unknown smooth functions of some predictor variables, and interest focuses on inference about these smooth functions. GAMs were originally developed by Trevor Hastie and Robert Tibshirani to blend properties of generalized linear models with additive models.
+
+$g(E(Y)) = \beta_0 + f_1(x_1)+f_2(x_2)+...$, where $f(x)$ is a smooth function of x. In this analysis, the model is super simple: 
+$E(y) = \beta_0+\beta_1f_1(age)+\beta_2f_2(age)+....$
+
+Reference: 
+
+
+And here for the demo, I'll just do it on the volume of parcels.
+
+i) Define new data for prediction
+```{r}
+
+age_vec = seq(5,21,0.1)
+new_age = data.frame(age_vec)
+colnames(new_age) = 'age'
+```
+
+ii) Fit model and save predictions
+```{r}
+d_l = list()
+r_square_l = list()
+ssp_l = list()
+for (si in c(1:3)){
+  d = double()
+  r_square = c()
+  ssp=c()
+  for (i in colnames(group_data[[si]])[1:169]){
+    gami = mgcv::gam(group_data[[si]][,i]~s(age,sp=-1), data = group_data[[si]])
+    predict = predict(gami, newdata = new_age)
+    d = rbind(d,predict)
+    r_square = c(r_square, summary(gami)$r.sq)
+    ssp = c(ssp,gami['sp'][[1]])
+  }
+  rownames(d) = colnames(group_data[[si]])[1:169]
+  names(r_square) = colnames(group_data[[si]])[1:169]
+  names(ssp) = colnames(group_data[[si]])[1:169]
+  d_l[[si]] = d
+  r_square_l[[si]] = r_square
+  ssp_l[[si]] = ssp
+  
+
+  ooo = rownames(d)[order(r_square, decreasing = T)]
+  df_pre = data.frame(age = age_vec, value = d[ooo[1],])
+  df_data = data.frame(age = group_data[[si]][,'age'], value = group_data[[si]][,ooo[1]])
+  p2 = ggplot() + 
+    geom_line(df_pre, mapping = aes(x=age, y=value), col='Red') +
+    #geom_point(df, mapping = aes(x=age, y=v)) +
+    geom_point(df_data, mapping = aes(x = age, y =value), alpha = 0.5)+
+    ggtitle(paste(sites[si], ' ', ooo[1],' r_square ', round(r_square[ooo[1]],5), ' sp = ', round(ssp[ooo[1]],3),sep=''))+ 
+    theme_bw() + 
+    theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))
+  print(p2)
+}
+```
+
+## Build hierarchical cluster analysis for each site
+
+We build hierarchical clustering model for each site based on the predictions of the GAMs. Using hierarchical clustering is easier for visulization and also we can see how the clustering tree splits.
+
+```{r}
+hclust_c_l = list()
+for (i in c(1:3)){
+  dist_mat <- cor(t(d_l[[i]]))
+  dist_mat = 1 - dist_mat
+
+  dist_c_si = as.dist(dist_mat)
+
+  hclust_c_l[[i]] <- hclust(dist_c_si, method = 'average')
+}
+```
+
+
+## Visualize clustering trees
+
+```{r,warning=F}
+
+setwd('Cluster_ana/')
+dir.create('cluster_ana_v')
+setwd('cluster_ana_v')
+pdf('cluster_hcp.pdf')
+for (c_number in c(2:5)){
+  # Cut the template tree
+  # Get the mean trajectries for cluster matching
+  
+  cut_t_si <- cutree(hclust_c_l[[1]], k=c_number)
+  mean_t_si = double()
+  for(i in c(1:c_number)){
+    if (sum(cut_t_si==i) ==1) {
+      after_scale = t(scale(d_l[[1]][cut_t_si==i, ]))
+    } else{
+      after_scale = t(scale(t(d_l[[1]][cut_t_si==i, ])))
+    }
+    mean = apply(after_scale, 2, mean, na.rm = T)
+    mean_t_si = rbind(mean_t_si, mean)
+  }
+  clu_t_si = unique(cut_t_si[labels(hclust_c_l[[1]])])
+  
+  #Cut tht clustering for different site
+  #find the match of each site
+  
+  ind_c_l=list()
+  clu_c_l=list()
+  cut_l = list()
+  for (si in c(1:3)) {
+    cut_c <- cutree(hclust_c_l[[si]], k=c_number)
+    cut_l[[si]] = cut_c
+    mean_c = double()
+    for(i in c(1:c_number)){
+      if (sum(cut_c==i)==1) {
+        after_scale = t(scale(d_l[[si]][cut_c==i, ]))
+      } else{
+        after_scale = t(scale(t(d_l[[si]][cut_c==i, ])))
+      }
+      mean = apply(after_scale, 2, mean, na.rm = T)
+      mean_c = rbind(mean_c, mean)
+    }
+    
+    clu_c_l[[si]] = unique(cut_c[labels(hclust_c_l[[si]])])
+    ind_c_l[[si]] = as.integer(find_match(mean_c, mean_t_si))
+  }
+  
+  # Get the color map and match them todifferent cluster tree
+  # Plot the clustering tree
+  col_all = rainbow_hcl(10,c=90)
+  
+  
+  par(mfrow=c(3,1))
+  for (si in c(1:3)){
+    avg_dend_obj <- as.dendrogram(hclust_c_l[[si]])
+    col_si = col_all[ind_c_l[[si]]][clu_c_l[[si]]]
+    avg_col_dend <- color_branches(avg_dend_obj, k=c_number, col = col_si)
+    plot(avg_col_dend, main = paste('Dendrogram for',sites[si]))
+  }
+  
+  #Create folder to save clustering results  
+  dir.create(paste(c_number,'_cluster',sep=''))
+  dir.create(paste(c_number,'_cluster/',sites[1],sep = ''))
+  dir.create(paste(c_number,'_cluster/',sites[2],sep = ''))
+  dir.create(paste(c_number,'_cluster/',sites[3],sep = ''))
+  
+  # Generate plotlist for mean trajectories
+  plot_list=list()
+  
+  for (si in c(1:3)){
+    cut_c_v = rep(0, length(cut_l[[si]]))
+    for(i in 1:c_number){
+      cut_c_v[cut_l[[si]]==i] = ind_c_l[[si]][i]
+    }
+    for(i in unique(cut_c_v)){
+      dir.create(paste(c_number,'_cluster/',sites[si],'/cluster_',i,sep = ''))
+      if (sum(cut_c_v==i)==1) {
+        after_scale = t(scale(d_l[[si]][cut_c_v==i, ]))
+      } else{
+        after_scale = t(scale(t(d_l[[si]][cut_c_v==i, ])))
+      }
+      mean = apply(after_scale, 2, mean, na.rm = T)
+      sd = apply(after_scale, 2, sd, na.rm = T)
+      df = data.frame(age = age_vec, mean = mean, sd = sd)
+      p = ggplot(df, aes(x=age, y=mean)) + 
+        geom_line(col=col_all[i]) +
+        geom_point(col=col_all[i])+
+        geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=0.1,alpha = 0.1, col=col_all[i])+
+        ylab('value')+labs(title = paste('cluster',i,'\n N =',  sum(cut_c_v==i)))+
+        theme(axis.text=element_text(size=6), axis.title=element_text(size=6))
+      plot_list[[3*(i-1)+si]]=p
+      write(rownames(d_l[[si]])[cut_c_v==i],paste(c_number,'_cluster/',sites[si],'/cluster_',i,'/variable.txt',sep = ''))
+    }
+  }
+  multiplot(plotlist = plot_list, cols = c_number)  
+}
+
+dev.off()
+
+
+```
+
+
+
+
+
+
+
+

@@ -1,0 +1,4 @@
+fs_v_ctx.lh.caudalanteriorcingulate
+fs_v_ctx.lh.fusiform
+fs_v_ctx.rh.caudalmiddlefrontal
+fs_v_ctx.rh.fusiform

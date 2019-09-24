@@ -1,0 +1,4 @@
+fs_v_Left.Caudate
+fs_v_Left.Putamen
+fs_v_Right.Putamen
+fs_v_Right.Accumbens.area

@@ -1,0 +1,6 @@
+fs_v_ctx.lh.caudalmiddlefrontal
+fs_v_ctx.lh.precentral
+fs_v_ctx.lh.insula
+fs_v_ctx.rh.precentral
+fs_v_ctx.rh.superiorfrontal
+fs_v_wm.rh.rostralanteriorcingulate
