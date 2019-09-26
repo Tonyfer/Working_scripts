@@ -69,6 +69,7 @@ fs_v_wm.rh.isthmuscingulate
 fs_v_wm.rh.lateraloccipital
 fs_v_wm.rh.lateralorbitofrontal
 fs_v_wm.rh.lingual
+fs_v_wm.rh.medialorbitofrontal
 fs_v_wm.rh.middletemporal
 fs_v_wm.rh.parahippocampal
 fs_v_wm.rh.paracentral
